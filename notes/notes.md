@@ -66,6 +66,16 @@ Other notes
 * How is this difference than Celery? How is it different than Akka?
 * Clients don't have to be containers. A client library can do cluster discovery and interrogation.
 * Req/resp is mainly for clients.
-* Messages have value, error, meta, pass through state, control headers, from, to, mode
+* Messages have value, error, meta, pass through state, control headers, from, to, mode, tracing data
 * Zmq and direct call are just transports in a stack. A transport can punt a component down the stack
 * MVP: sync req/resp over the local network with node discovery. No governors. Hard coded component discovery. No plugins other than transport.
+* governor may need to distinguish a suicide from other types of container exists
+* an auto-deployment component
+    * component
+    * API (messaging, off course)
+    * command-line utility
+    * auto-sync at governor launch
+    * network-wide automatic rolling upgrades
+* Maybe a django crispy forms based admin (e.g. for deployment management) + monitors
+    * charts: https://djangopackages.org/grids/g/charts/
+* GRPC transport?
