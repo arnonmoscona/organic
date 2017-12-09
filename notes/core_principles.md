@@ -1,3 +1,56 @@
+# Motivations
+
+## Happy developers
+
+* Brain dead simple to develop a component
+    * Focus on the application logic. We'll take care of the rest
+    * Trivial development and debugging in a locally modeled network
+    * Use your favorite tools
+    * No concurrency issues to deal with (almost)
+        * "almost" because there are timing issues, but we have your back for that too
+    * Share-nothing architecture: don't worry about state leakage, shared mutable objects
+    * Deployment environment behaves almost identically to dev/debug
+* Built-in support for distributed debugging
+    * Ability to locally model network, timing, race conditions
+* Clear steps to distribution, protocol definitions
+    * Widely used interface IDL
+    * Node-like local package deployments (even independent of virtual env)
+    * Components do not have to be pip packages. They're just code.
+* Interoperability on business message level
+    * Can always escape out of this crazy thing with little change required
+    * Specifically: control plane messages are completely separate from
+      the application plane, and application plane messages are *not
+      forced* to use protobuf
+* Very similar development process for different modes
+* CI friendly
+
+## Happy ops
+
+* Simple deployment model
+* CD friendly
+* Autoscaling, elasticity out of the box in any environment
+* Auto-restart for malfunctioning components
+* Circuit breakers built-in
+* Component startup order largely doesn't mater (ZMQ sockets take care of the magic)
+* Multi-DC features, with
+    * Message horizons configurable per component, app, network, named flow
+    * Cross-DC flow rate limits via flow rate triggered circuit throttles
+        * Local overflow option
+        * Overflow drop option
+        * Overflow bounce option
+* Eventually automated network-wide deployment
+* Eventually automated canaries, staged rollout
+* Built-in support for clean structured logging
+* Production tracing support
+* Production per-flow or per component manual detailed debug tracing
+* Support for monitoring out of the box
+
+## Happy management
+
+Don't paticularly care right now...
+
+# Principles
+
 * A single threaded application component container
 * In all cases use the same thread.
   * First come first serve. No priority.
