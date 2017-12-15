@@ -2,5 +2,5 @@
     * component
     * API (messaging, off course)
     * command-line utility
-    * auto-sync at governor launch
+    * auto-sync at supervisor launch
     * network-wide automatic rolling upgrades

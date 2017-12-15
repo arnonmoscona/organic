@@ -31,7 +31,7 @@
     * No leaders, no cluster-wide guarantees, no automatic sharding
 * Initially no support for versioning but may support semantic versioning and allocation by version
     * Concretely: no support for versioning at all except maybe URI placeholder with no defined semantics and no effect on discovery
-* Governor not in MVP1
+* Supervisor not in MVP1
 * Deployment management not in MVP1
 * encryption, logging, monitoring, container lifecycle hooks not in MVP1
 * Transport stacking and punting not in MVP1
@@ -44,7 +44,7 @@
 ## Basic operational facilities
 
 * Basic component environment support (virtual env, before-start, after-shutdown, prerequisite checks)
-* Basic governors
+* Basic supervisors
 * Introduction of elementary plugin support for:
     * Logging
     * Tracing
