@@ -25,6 +25,12 @@ Control plane
 Application plane
 =================
 
+Client
+======
+
+Messaging pattern
+=================
+
 REQ/REP
 =======
 

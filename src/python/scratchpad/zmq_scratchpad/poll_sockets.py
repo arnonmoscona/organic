@@ -8,7 +8,8 @@
 
 import zmq
 
-
+print(f'Using zmq version {zmq.zmq_version()}')
+print(f'      pyzmq version {zmq.pyzmq_version()}')
 # Prepare our context and sockets
 context = zmq.Context()
 
@@ -62,10 +63,29 @@ behavior_binding = {
     requester: requester_behavior,
 }
 
+
+def sync_req(message):
+    print('sending sync...')
+    requester.send_string(f'sync request "{message}"')
+
+    # same process... so fake it
+    print('   receiving on requester socket...')
+    req = receiver.recv_string()
+    receiver_behavior(req, 0, participants)
+
+    # back home...
+    response = requester.recv_string()
+    print(f'    got back: {response}')
+
+
 # Process messages from both sockets
+# In reality should probably use lazy pirate
 while True:
     should_stop = False
     try:
+        # see http://pyzmq.readthedocs.io/en/latest/api/zmq.html#polling
+        # polling can be done with a timeout, which can allow to check liveness when there's no
+        # activity...
         socks = dict(poller.poll())
     except KeyboardInterrupt:
         break
@@ -79,8 +99,15 @@ while True:
     # sleep(1)
     iteration = iteration + 1
 
+print('\nFor kicks, polling with timeout...')
+socks = dict(poller.poll(1000))
+if not socks:
+    print('    Yep, got a timeout\n')
 
-print('closing...')
+
+sync_req('hello')
+
+print('\nclosing...')
 
 poller.unregister(receiver)
 poller.unregister(requester)

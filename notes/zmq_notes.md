@@ -22,3 +22,4 @@
 ## Security
 
 * Built-in transport level SSH is supported. Application level security not included.
+* Need to understand zmq CURVE support
