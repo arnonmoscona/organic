@@ -1,4 +1,4 @@
 protobuf>=3.5.0
 pyzmq>=16.0.3
 docutils>=0.12
-nose=1.3.7
+nose==1.3.7
