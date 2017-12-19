@@ -1,0 +1,64 @@
+@startuml
+participant "Business code" as code
+participant "Req. msg" as msg1 << generated >>
+participant "Client lib A" as client_A <<framework>>
+participant "Control plane (A)" as control_A <<framework>>
+participant "Transport msg" as wrapper
+participant "ZMQ" as zmq <<framework>>
+
+activate code
+code -> client_A: init(config)
+note left: Everything in\na single thread
+activate client_A
+client_A -> client_A: read_config()
+client_A -> control_A: create(config)
+activate control_A
+note right: this is in-process\n(in this example).
+activate zmq
+control_A ->zmq: create sockets
+
+...
+
+code -> msg1: create
+activate msg1
+note left: asynnc\nreq/rep
+code -> client_A: request_async(msg1, timeout)
+client_A -> client_A: generate req_id
+client_A -> control_A: send(msg1, req_ID, handler)
+control_A -> control_A: create_headers()
+control_A -> control_A: find_REQ_socket()
+control_A -> control_A: associate call ID\nwith available socket
+control_A -> wrapper: create
+activate wrapper
+control_A -> zmq: send(wrappeed_msg)
+
+note right: in the sync call case\ncontrol now enters a\npolling loop.\nReturns to client\nonly when response\nis ready or timeout
+
+zmq --> control_A
+deactivate wrapper
+control_A --> client_A
+deactivate msg1
+client_A --> code: req_id
+note left: end request
+
+...
+
+
+code -> client_A: check_response(req_id)
+note left: assume response\nis available
+client_A -> control_A: poll_responses()
+control_A --> client_A: available_responses
+client_A -> client_A: populate_pending_responses()
+client_A -> client_A: lookup_response(req_id)
+client_A --> code: Just(response)
+note right: Just is a Maybe\ncan be Error\ncan be Timeout\ncan be Unavailable
+
+...
+
+code -> code: shutdown
+deactivate zmq
+deactivate control_A
+deactivate client_A
+deactivate code
+
+@enduml

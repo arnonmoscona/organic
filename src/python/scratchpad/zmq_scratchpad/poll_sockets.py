@@ -101,6 +101,8 @@ while True:
 
 print('\nFor kicks, polling with timeout...')
 socks = dict(poller.poll(1000))
+# this is good for a supervisor, but also to periodically to
+# maintenance when there is no activity on any socket
 if not socks:
     print('    Yep, got a timeout\n')
 
