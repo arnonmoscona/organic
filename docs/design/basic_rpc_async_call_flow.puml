@@ -1,5 +1,19 @@
 @startuml
-participant "Business code" as code
+
+skinparam roundcorner 20
+skinparam noteBorderColor black
+skinparam NoteBackgroundColor #FFFFDE
+
+skinparam sequence {
+  ParticipantBorderColor Black
+  ParticipantBackgroundColor white
+  LifeLineBorderColor black
+	LifeLineBackgroundColor #EEEEEE
+	ArrowColor black
+	GroupBorderColor #DDDDBB
+}
+
+participant "Application code" as code
 participant "Req. msg" as msg1 << generated >>
 participant "Client lib A" as client_A <<framework>>
 participant "Control plane (A)" as control_A <<framework>>
@@ -50,7 +64,7 @@ client_A -> control_A: poll_responses()
 control_A --> client_A: available_responses
 client_A -> client_A: populate_pending_responses()
 client_A -> client_A: lookup_response(req_id)
-client_A --> code: Just(response)
+client_A --> code: NormalResponse(response)
 note right: Just is a Maybe\ncan be Error\ncan be Timeout\ncan be Unavailable
 
 ...

@@ -10,6 +10,15 @@ Component
 Application
 ===========
 
+Interaction
+===========
+
+Service
+=======
+
+Remote service
+==============
+
 Message
 =======
 
@@ -37,6 +46,8 @@ REQ/REP
 Supervisor
 ==========
 
+Time Source
+===========
 
 Bounded Contexts
 ################

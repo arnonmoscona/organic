@@ -109,10 +109,28 @@ if not socks:
 
 sync_req('hello')
 
-print('\nclosing...')
 
 poller.unregister(receiver)
 poller.unregister(requester)
+
+
+print('Trying receive timeout...')
+
+requester.setsockopt(zmq.RCVTIMEO, 1000)
+requester.send_string('test')  # should also use socket timeout on send...
+try:
+    response = requester.recv_string()
+except zmq.error.Again as ex:
+    print(f'    got exception: {ex.__class__}/{ex.errno}: {ex.strerror}')
+    print('     So can I try to receive again now (without resending)?')
+    requester.setsockopt(zmq.RCVTIMEO, 0)  # 0 => return immediately, -1 => block
+    try:
+        response = requester.recv_string()
+    except zmq.error.Again as ex:
+        print(f'        got exception: {ex.__class__}/{ex.errno}: {ex.strerror}')
+        print('        So yes (but cannot send)')
+
+print('\nclosing...')
 requester.close()
 receiver.close()
 
