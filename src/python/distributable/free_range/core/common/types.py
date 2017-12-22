@@ -112,11 +112,10 @@ class MaybeResponse:
         true_conditions_count = sum(map(lambda c: 1 if c else 0, exclusive_conditions))
         if true_conditions_count > 1:
             return False  # conditions must be mutually exclusive
-        if self.is_completed:
-            if (not self._interaction_start_timestamp
-                    or not self._received_timestamp
-                    or self._received_timestamp - self._interaction_start_timestamp < 0):
-                return False  # A completed response must have valid response time data
+        if (not self._interaction_start_timestamp
+                or not self._received_timestamp
+                or self._received_timestamp - self._interaction_start_timestamp < 0):
+            return False  # A completed response must have valid response time data
         return True
 
 
@@ -126,15 +125,21 @@ class NormalResponse(MaybeResponse):
     """
     def __init__(self, response_object,
                  interaction_start_timestamp, received_timestamp, request_id=None):
+        """
+        :param response_object: the actual response returned from the remote party
+        :param interaction_start_timestamp: the start time of the interaction in millis
+        :param received_timestamp: the timestamp that the response was received by the control
+            plane, which can be quite before it was actually returned to the application code.
+        :param request_id: the ID or the interaction ID that expected this response
+      """
         super().__init__(request_id, interaction_start_timestamp, received_timestamp)
         self._response = response_object
 
     # fixme: _str__
     @property
     def response(self):
+        # this line
         self.error_check()
-        if self._response_is_none():
-            raise FreeRangeError('NormalResponse object with a None response')
         return self._response
 
     @property
@@ -142,10 +147,26 @@ class NormalResponse(MaybeResponse):
         return True
 
     def is_valid(self):
-        return super().is_valid() and not self._response_is_none()
+        return (super().is_valid()
+                and not self._response_is_none()
+                and self.response_time_millis is not None
+                and self.response_time_millis >= 0.0)
+
+    @property
+    def is_completed(self):
+        self.error_check()
+        return True
 
     def _response_is_none(self):
         return self._response is None
+
+    def error_check(self):
+        super().error_check()
+        if self._response_is_none():
+            raise FreeRangeError('NormalResponse object with a None response')
+        response_time = self.response_time_millis
+        if response_time <= 0.0:
+            raise FreeRangeFrameworkBug('Bad response time data')
 
 
 class RemoteErrorResponse(MaybeResponse):
