@@ -25,7 +25,12 @@ class MaybeResponse:
         self._interaction_start_timestamp = interaction_start_timestamp
         self._received_timestamp = received_timestamp
 
-    # fixme: _str__
+    def __str__(self):
+        return str({'type': type(self),
+                    'state': {'request_id': self.request_id,
+                              '_interaction_start_timestamp': self._interaction_start_timestamp,
+                              '_received_timestamp': self._received_timestamp}})
+
     @property
     def has_response(self):
         return False
@@ -92,7 +97,8 @@ class MaybeResponse:
         and the time that the response is returned to te appllication code.
         :return: None if the interaction is incomplete or the response time in milliseconds.
         """
-        if not self.is_completed:
+        if (not self.has_response or self._interaction_start_timestamp is None or
+                self._received_timestamp is None):
             return None
         else:
             return self._received_timestamp - self._interaction_start_timestamp
@@ -112,9 +118,9 @@ class MaybeResponse:
         true_conditions_count = sum(map(lambda c: 1 if c else 0, exclusive_conditions))
         if true_conditions_count > 1:
             return False  # conditions must be mutually exclusive
-        if (not self._interaction_start_timestamp
-                or not self._received_timestamp
-                or self._received_timestamp - self._interaction_start_timestamp < 0):
+        if (self._interaction_start_timestamp is None
+                or self._received_timestamp and
+                self._received_timestamp - self._interaction_start_timestamp < 0):
             return False  # A completed response must have valid response time data
         return True
 
@@ -135,7 +141,11 @@ class NormalResponse(MaybeResponse):
         super().__init__(request_id, interaction_start_timestamp, received_timestamp)
         self._response = response_object
 
-    # fixme: _str__
+    def __str__(self):
+        return str({'type': type(self),
+                    'state': {'request_id': self.request_id,
+                              'response_time': self.response_time_millis}})
+
     @property
     def response(self):
         # this line
@@ -154,7 +164,7 @@ class NormalResponse(MaybeResponse):
 
     @property
     def is_completed(self):
-        self.error_check()
+        self._timing_error_check()
         return True
 
     def _response_is_none(self):
@@ -164,8 +174,11 @@ class NormalResponse(MaybeResponse):
         super().error_check()
         if self._response_is_none():
             raise FreeRangeError('NormalResponse object with a None response')
+        self._timing_error_check()
+
+    def _timing_error_check(self):
         response_time = self.response_time_millis
-        if response_time <= 0.0:
+        if response_time is None or response_time <= 0.0:
             raise FreeRangeFrameworkBug('Bad response time data')
 
 

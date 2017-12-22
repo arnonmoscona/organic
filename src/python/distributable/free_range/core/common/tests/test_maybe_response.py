@@ -6,7 +6,7 @@ from free_range.core.common.types import MaybeResponse
 
 class MaybeResponseMixIn(unittest.TestCase):
     def setUp(self):
-        self.maybe = MaybeResponse('req-1')
+        self.maybe = MaybeResponse('req-1', interaction_start_timestamp=0)
 
 
 class TestResponse(MaybeResponseMixIn):
@@ -81,7 +81,6 @@ class TestIsValid(MaybeResponseMixIn):
         self.assertTrue(maybe.is_valid())
 
     def test_is_valid_with_bad_timing(self):
-        # Note: incomplete => timing does not matter
         maybe = MaybeResponse('req-2', 10, 9)
-        self.assertTrue(maybe.is_valid())
+        self.assertFalse(maybe.is_valid())
 
