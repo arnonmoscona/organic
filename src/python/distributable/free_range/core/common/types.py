@@ -42,12 +42,12 @@ class MaybeResponse:
         :return: returns the response if there was one available. None otherwise.
         :raises: ResponseTimeout, RemoteError, FreeRangeError. Anything else is a bug.
         """
-        self.error_check()
+        self._error_check()
         raise FreeRangeError('Attempt to retrieve a response from a MaybeResponse. '
                              'A response can only be obtained from a NBormalResponse.',
                              caused_by=None, request_id=self._request_id, response=self)
 
-    def error_check(self):
+    def _error_check(self):
         if not self.is_valid():
             raise FreeRangeFrameworkBug('Invalid MaybeResponse state', request_id=self.request_id,
                                         caused_by=None, response=self)
@@ -124,6 +124,17 @@ class MaybeResponse:
             return False  # A completed response must have valid response time data
         return True
 
+    def _timing_error_check(self):
+        if not self._is_required_timing_valid():
+            raise FreeRangeFrameworkBug('Bad response time data')
+
+    def _is_required_timing_valid(self):
+        """
+        Checks validity of response time data when required. Does not raise exceptions.
+        :return: True if response time data is present and valid
+        """
+        return self.response_time_millis is not None and self.response_time_millis >= 0.0
+
 
 class NormalResponse(MaybeResponse):
     """
@@ -149,7 +160,7 @@ class NormalResponse(MaybeResponse):
     @property
     def response(self):
         # this line
-        self.error_check()
+        self._error_check()
         return self._response
 
     @property
@@ -159,8 +170,7 @@ class NormalResponse(MaybeResponse):
     def is_valid(self):
         return (super().is_valid()
                 and not self._response_is_none()
-                and self.response_time_millis is not None
-                and self.response_time_millis >= 0.0)
+                and self._is_required_timing_valid())
 
     @property
     def is_completed(self):
@@ -170,16 +180,11 @@ class NormalResponse(MaybeResponse):
     def _response_is_none(self):
         return self._response is None
 
-    def error_check(self):
-        super().error_check()
+    def _error_check(self):
+        super()._error_check()
         if self._response_is_none():
             raise FreeRangeError('NormalResponse object with a None response')
         self._timing_error_check()
-
-    def _timing_error_check(self):
-        response_time = self.response_time_millis
-        if response_time is None or response_time <= 0.0:
-            raise FreeRangeFrameworkBug('Bad response time data')
 
 
 class RemoteErrorResponse(MaybeResponse):
@@ -189,13 +194,38 @@ class RemoteErrorResponse(MaybeResponse):
     """
     def __init__(self, error_object, request_id=None,
                  interaction_start_timestamp=None, received_timestamp=None):
-        super().__init__(request_id, interaction_start_timestamp, received_timestamp)
+        super().__init__(request_id=request_id,
+                         interaction_start_timestamp=interaction_start_timestamp,
+                         received_timestamp=received_timestamp)
         self._error = error_object
 
-    # fixme: _str__
+    def __str__(self):
+        return str({'type': type(self),
+                    'state': {'request_id': self.request_id,
+                              'response_time': self.response_time_millis,
+                              'error': str(self._error)}})
+
     @property
     def error(self):
         return self._error
+
+    @property
+    def response_time_millis(self):
+        """
+        The difference in time between the initiation of the remote interaction and
+        the time that the control plane noted te response coming back from the remote service.
+        This time difference can be shorter than the the time between the interaction initiation
+        and the time that the response is returned to te appllication code.
+        :return: None if the interaction is incomplete or the response time in milliseconds.
+        """
+        if (not self._error or self._interaction_start_timestamp is None or
+                self._received_timestamp is None):
+            return None
+        else:
+            return self._received_timestamp - self._interaction_start_timestamp
+
+    def is_valid(self):
+        return self._error and self._is_required_timing_valid() and self.request_id
 
 
 class FrameworkErrorResponse(MaybeResponse):
