@@ -140,6 +140,17 @@ class MaybeResponse:
         except AttributeError:
             return False
 
+    def _response_time_millis_or_none(self):
+        """
+        Used for __str__ and similar functions where we want no exceptions...
+        :return: the value of response_time_millis or None. Never raises
+        """
+        # noinspection PyBroadException
+        try:
+            return self.response_time_millis
+        except Exception:
+            return None
+
 
 class NormalResponse(MaybeResponse):
     """
@@ -160,7 +171,7 @@ class NormalResponse(MaybeResponse):
     def __str__(self):
         return str({'type': type(self),
                     'state': {'request_id': self.request_id,
-                              'response_time': self.response_time_millis}})
+                              'response_time': self._response_time_millis_or_none()}})
 
     @property
     def response(self):
@@ -207,7 +218,7 @@ class RemoteErrorResponse(MaybeResponse):
     def __str__(self):
         return str({'type': type(self),
                     'state': {'request_id': self.request_id,
-                              'response_time': self.response_time_millis,
+                              'response_time': self._response_time_millis_or_none(),
                               'error': str(self._error)}})
 
     @property
@@ -245,7 +256,12 @@ class FrameworkErrorResponse(MaybeResponse):
         super().__init__(request_id, interaction_start_timestamp, received_timestamp)
         self._framework_error = error_object
 
-    # fixme: _str__
+    def __str__(self):
+        return str({'type': type(self),
+                    'state': {'request_id': self.request_id,
+                              'response_time': self._response_time_millis_or_none(),
+                              'error': str(self._framework_error)}})
+
     @property
     def framework_error(self):
         return self._framework_error
