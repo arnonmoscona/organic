@@ -7,8 +7,8 @@ class FreeRangeError(Exception):
     """
     Base class for all framework exceptions. Any other type of raised exception is considered a bug.
     """
-    def __init__(self, msg=None, caused_by=None, request_id=None, response=None, *args, **kwargs):
-        super().__init__(msg, *args, **kwargs)
+    def __init__(self, msg=None, caused_by=None, request_id=None, response=None, *args):
+        super().__init__(msg, *args)
         self._caused_by = caused_by
         self._request_id = request_id
         self._response = response

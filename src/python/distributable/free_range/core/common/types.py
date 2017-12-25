@@ -44,7 +44,7 @@ class MaybeResponse:
         """
         self._error_check()
         raise FreeRangeError('Attempt to retrieve a response from a MaybeResponse. '
-                             'A response can only be obtained from a NBormalResponse.',
+                             'A response can only be obtained from a NormalResponse.',
                              caused_by=None, request_id=self._request_id, response=self)
 
     def _error_check(self):
@@ -83,7 +83,7 @@ class MaybeResponse:
     @property
     def is_completed(self):
         """
-        :return: True if the interaction completed. False means that no reponse was received yet,
+        :return: True if the interaction completed. False means that no response was received yet,
             but also not timeout or remote error occurred.
         """
         return self.has_response or self.timeout or self.error
@@ -94,7 +94,7 @@ class MaybeResponse:
         The difference in time between the initiation of the remote interaction and
         the time that the control plane noted te response coming back from the remote service.
         This time difference can be shorter than the the time between the interaction initiation
-        and the time that the response is returned to te appllication code.
+        and the time that the response is returned to te application code.
         :return: None if the interaction is incomplete or the response time in milliseconds.
         """
         if (not self.has_response or self._interaction_start_timestamp is None or
@@ -133,7 +133,12 @@ class MaybeResponse:
         Checks validity of response time data when required. Does not raise exceptions.
         :return: True if response time data is present and valid
         """
-        return self.response_time_millis is not None and self.response_time_millis >= 0.0
+        try:
+            return (self._interaction_start_timestamp is not None
+                    and self._received_timestamp is not None
+                    and self._received_timestamp >= self._interaction_start_timestamp)
+        except AttributeError:
+            return False
 
 
 class NormalResponse(MaybeResponse):
@@ -215,9 +220,10 @@ class RemoteErrorResponse(MaybeResponse):
         The difference in time between the initiation of the remote interaction and
         the time that the control plane noted te response coming back from the remote service.
         This time difference can be shorter than the the time between the interaction initiation
-        and the time that the response is returned to te appllication code.
+        and the time that the response is returned to te application code.
         :return: None if the interaction is incomplete or the response time in milliseconds.
         """
+        self._timing_error_check()
         if (not self._error or self._interaction_start_timestamp is None or
                 self._received_timestamp is None):
             return None
@@ -248,7 +254,7 @@ class FrameworkErrorResponse(MaybeResponse):
 class TimeoutResponse(MaybeResponse):
     """
     Represents a remote interaction timeout. All remote interactions that expect a response have a
-    timeout specification, and blocaking forms of the client API never block forever. A
+    timeout specification, and blocking forms of the client API never block forever. A
     TimeoutResponse is constructed by the framework when the interaction timed out before a
     normal response or error response was received.
     If a response of any kind is received after the interaction timed out, then the
@@ -268,7 +274,7 @@ class TimeoutResponse(MaybeResponse):
 class IncompleteResponse(MaybeResponse):
     """
     A typed incomplete interaction response. Constructed by the framework when checking for a
-    response taht was not received nor timed out.
+    response that was not received nor timed out.
     """
     def __init__(self, request_id=None,
                  interaction_start_timestamp=None):
