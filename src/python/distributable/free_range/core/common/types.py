@@ -253,6 +253,14 @@ class FrameworkErrorResponse(MaybeResponse):
     """
     def __init__(self, error_object, request_id=None,
                  interaction_start_timestamp=None, received_timestamp=None):
+        """
+        Creates a framework error response, which represents a detected bug in the free range
+        framework.
+        :param error_object: an Exception that represents the error. Must be an Exception
+        :param request_id: the request ID for which the framework error occurred.
+        :param interaction_start_timestamp: the timestamp when the interaction started
+        :param received_timestamp: the timestamp where the remote response was received (optional)
+        """
         super().__init__(request_id, interaction_start_timestamp, received_timestamp)
         self._framework_error = error_object
 
@@ -265,6 +273,30 @@ class FrameworkErrorResponse(MaybeResponse):
     @property
     def framework_error(self):
         return self._framework_error
+
+    def is_valid(self):
+        return (issubclass(type(self._framework_error), Exception)
+                and self.request_id is not None
+                and (self._timing_data_is_valid()))
+
+    def _timing_data_is_valid(self):
+        return self._interaction_start_timestamp is None or self._received_timestamp is None or \
+               self._interaction_start_timestamp <= self._received_timestamp
+
+    @property
+    def has_response(self):
+        return False
+
+    @property
+    def response(self):
+        raise FreeRangeFrameworkBug('No response can be obtained from an error response')
+
+    @property
+    def response_time_millis(self):
+        self._timing_error_check()
+        if self._timing_data_is_valid():
+            return self._received_timestamp - self._interaction_start_timestamp
+        return None
 
 
 class TimeoutResponse(MaybeResponse):
