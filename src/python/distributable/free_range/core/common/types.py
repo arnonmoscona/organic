@@ -45,19 +45,19 @@ class MaybeResponse:
         self._error_check()
         raise FreeRangeError('Attempt to retrieve a response from a MaybeResponse. '
                              'A response can only be obtained from a NormalResponse.',
-                             caused_by=None, request_id=self._request_id, response=self)
+                             caused_by=None, request_id=self._request_id)
 
     def _error_check(self):
         if not self.is_valid():
             raise FreeRangeFrameworkBug('Invalid MaybeResponse state', request_id=self.request_id,
-                                        caused_by=None, response=self)
+                                        caused_by=None)
         if self.timeout:
-            raise ResponseTimeout(caused_by=self.timeout, request_id=self.request_id, response=self)
+            raise ResponseTimeout(caused_by=self.timeout, request_id=self.request_id)
         if self.error:
-            raise RemoteError(caused_by=self.error, request_id=self.request_id, response=self)
+            raise RemoteError(caused_by=self.error, request_id=self.request_id)
         if not self.is_completed:
             raise FreeRangeError('Request is not complete yet', caused_by=None,
-                                 request_id=self._request_id, response=self)
+                                 request_id=self._request_id)
 
     @property
     def error(self):
@@ -308,24 +308,34 @@ class TimeoutResponse(MaybeResponse):
     If a response of any kind is received after the interaction timed out, then the
     response time is recorded but the return value is discarded.
     """
-    def __init__(self, timeout_object, request_id=None,
-                 interaction_start_timestamp=None, received_timestamp=None):
-        super().__init__(request_id, interaction_start_timestamp, received_timestamp)
-        self._timeout = timeout_object
+    def __init__(self, timeout, request_id=None,
+                 interaction_start_timestamp=None):
+        super().__init__(request_id, interaction_start_timestamp, None)
+        self._timeout = timeout
 
-    # fixme: _str__
+    def __str__(self):
+        return str({'type': type(self),
+                    'state': {'request_id': self.request_id,
+                              'request_timestamp': self._interaction_start_timestamp,
+                              'timeout': str(self._timeout)}})
+
     @property
     def timeout(self):
         return self._timeout
 
+    def is_valid(self):
+        return (self._interaction_start_timestamp is not None
+                and issubclass(type(self._timeout), int)
+                and self.request_id is not None)
 
-class IncompleteResponse(MaybeResponse):
-    """
-    A typed incomplete interaction response. Constructed by the framework when checking for a
-    response that was not received nor timed out.
-    """
-    def __init__(self, request_id=None,
-                 interaction_start_timestamp=None):
-        super().__init__(request_id, interaction_start_timestamp, None)
+    @property
+    def error(self):
+        if not self.is_valid():
+            raise FreeRangeFrameworkBug('Not a valid timeout response')
+        return f'timeout: {self._timeout}ms'
 
-    # fixme: _str__
+    @property
+    def response_time_millis(self):
+        if not self.is_valid():
+            raise FreeRangeFrameworkBug('Not a valid timeout response')
+        raise ResponseTimeout(f'Timeout request {self.request_id}', request_id=self.request_id)
