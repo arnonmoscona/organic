@@ -15,7 +15,7 @@ class TestResponse(MaybeResponseMixIn):
 
     def test_response(self):
         with self.assertRaises(FreeRangeError):
-            self.maybe.response  # fixme: exclude inspection from test scope
+            self.maybe.response
 
 
 class TestError(MaybeResponseMixIn):

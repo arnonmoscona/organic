@@ -1,0 +1,13 @@
+// A protobuf specification for use in RPC tests.
+
+syntax = "proto3";
+
+package free_range.client.tests.papi;
+
+message TestRpcRequest {
+    string request = 1;
+}
+
+message TestRpcResponse {
+    string response = 1;
+}

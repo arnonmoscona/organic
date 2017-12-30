@@ -49,6 +49,12 @@ Supervisor
 Time Source
 ===========
 
+PAPI
+====
+
+Protobuf specified API classes. By convention, generated classes that are specified in Protobuf
+are generated into a ``.papi`` package that contains those classes exclusively.
+
 Bounded Contexts
 ################
 
