@@ -4,10 +4,10 @@ syntax = "proto3";
 
 package free_range.client.tests.papi;
 
-message TestRpcRequest {
+message RpcRequestA {
     string request = 1;
 }
 
-message TestRpcResponse {
+message RpcResponseA {
     string response = 1;
 }
