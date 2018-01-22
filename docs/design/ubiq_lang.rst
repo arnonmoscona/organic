@@ -49,6 +49,12 @@ Supervisor
 Time Source
 ===========
 
+Local Time
+==========
+
+Coordinated Time
+================
+
 PAPI
 ====
 

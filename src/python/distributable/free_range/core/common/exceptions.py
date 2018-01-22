@@ -37,6 +37,26 @@ class FreeRangeError(Exception):
         return self._context
 
 
+class InvalidArgument(FreeRangeError):
+    def __init__(self, msg=None, caused_by=None, request_id=None, **kwargs):
+        super().__init__(msg, caused_by, request_id, **kwargs)
+
+    def _state_as_dict(self):
+        d = super()._state_as_dict()
+        d.update({'exception': type(self)})
+        return d
+
+
+class DisallowedInCurrentStateError(FreeRangeError):
+    def __init__(self, msg=None, caused_by=None, request_id=None, **kwargs):
+        super().__init__(msg, caused_by, request_id, **kwargs)
+
+    def _state_as_dict(self):
+        d = super()._state_as_dict()
+        d.update({'exception': type(self)})
+        return d
+
+
 class ResponseTimeout(FreeRangeError):
     """
     A timeout occurred while waiting for a remote response
