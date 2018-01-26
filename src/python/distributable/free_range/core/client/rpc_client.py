@@ -3,7 +3,7 @@ The RPC behavior of a client
 """
 from free_range.core.common import exceptions
 from free_range.core.common.exceptions import ResponseTimeout
-from free_range.core.common.types import TimeoutResponse
+from free_range.core.common.response_types import TimeoutResponse
 from free_range.transport.types import TransportMessageType
 
 
@@ -18,7 +18,7 @@ class RpcClient:
         self.validate_rpc_request(endpoint, message)
         serializer = self._base_client.get_serializer_for(endpoint)
         remote_endpoint = self._base_client.route(endpoint, message)
-        timeout_spec = self._base_client.get_timeout_spec(endpoint)
+        timeout_spec = self._base_client.get_timeout_specification(endpoint)
         timeout_clock = self._base_client.clock_for(timeout_spec).start()
         start_timestamp = self._base_client.get_timestamp()
         try:

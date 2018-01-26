@@ -1,7 +1,7 @@
 import unittest
 
 from free_range.core.common.exceptions import FreeRangeFrameworkBug, RemoteError
-from free_range.core.common.types import RemoteErrorResponse
+from free_range.core.common.response_types import RemoteErrorResponse
 
 
 class RemoteErrorResponseMixIn(unittest.TestCase):

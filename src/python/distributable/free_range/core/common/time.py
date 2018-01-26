@@ -78,6 +78,8 @@ class TickTimeSource:
         """
         self._coordinator = coordinator or _UselessTickCoordinator()
         self._current_time = self._coordinator.now()
+        self._should_auto_advance = False
+        self._next_advance_is_auto = False  # this helps behavior to be more intuitive
 
     @property
     def units(self):
@@ -87,6 +89,11 @@ class TickTimeSource:
         return TimeoutSpecification(timeout, self.units)
 
     def timestamp(self):
+        if self._should_auto_advance:
+            if self._next_advance_is_auto:
+                self._current_time = self._coordinator.advance(1)
+            self._next_advance_is_auto = True
+
         return self._current_time
 
     def advance(self, count=1):
@@ -99,6 +106,12 @@ class TickTimeSource:
         if int(count) < 1:
             raise InvalidArgument('Tick time source may only be advanced by positive values')
         self._current_time = self._coordinator.advance(int(count))
+        self._next_advance_is_auto = False
+        return self
+
+    def auto_advance(self, state):
+        self._should_auto_advance = state
+        self._next_advance_is_auto = self._should_auto_advance
         return self
 
 

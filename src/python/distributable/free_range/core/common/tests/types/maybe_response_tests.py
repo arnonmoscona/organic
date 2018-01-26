@@ -1,7 +1,7 @@
 import unittest
 
 from free_range.core.common.exceptions import FreeRangeError
-from free_range.core.common.types import MaybeResponse
+from free_range.core.common.response_types import MaybeResponse
 
 
 class MaybeResponseMixIn(unittest.TestCase):

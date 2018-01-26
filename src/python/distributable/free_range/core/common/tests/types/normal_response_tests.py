@@ -1,7 +1,7 @@
 import unittest
 
 from free_range.core.common.exceptions import FreeRangeFrameworkBug
-from free_range.core.common.types import NormalResponse
+from free_range.core.common.response_types import NormalResponse
 
 
 class NormalResponseMixIn(unittest.TestCase):

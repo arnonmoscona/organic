@@ -75,3 +75,63 @@ class TimeoutSpecificationTests(unittest.TestCase):
     def test_creating_a_timeout_spec_reflects_the_argument(self):
         tos = TickTimeSource().timeout_specification(10)
         self.assertEqual((10, TimeUnit.TICKS), (tos.timeout, tos.units))
+
+
+class AutoAdvanceTests(unittest.TestCase):
+    def test_auto_advance_returns_self(self):
+        ts = TickTimeSource()
+        self.assertEqual(ts, ts.auto_advance(False))
+
+    def test_when_auto_advance_is_on_timestamp_increases_on_each_call(self):
+        time_source = TickTimeSource().auto_advance(True)
+        ts1 = time_source.timestamp()
+        ts2 = time_source.timestamp()
+        ts3 = time_source.timestamp()
+        time_source.advance(5)
+        ts4 = time_source.timestamp()
+        ts5 = time_source.timestamp()
+
+        expected = [1, 2, 3, 8, 9]
+        actual = [ts1, ts2, ts3, ts4, ts5]
+        self.assertEqual(expected, actual)
+
+    def test_when_auto_advance_is_off_then_advances_only_explicitly(self):
+        time_source = TickTimeSource().auto_advance(False)
+        ts1 = time_source.timestamp()
+        ts2 = time_source.timestamp()
+        ts3 = time_source.timestamp()
+        time_source.advance(5)
+        ts4 = time_source.timestamp()
+        ts5 = time_source.timestamp()
+
+        expected = [0, 0, 0, 5, 5]
+        actual = [ts1, ts2, ts3, ts4, ts5]
+        self.assertEqual(expected, actual)
+
+    def test_can_turn_off_auto_advance_midway(self):
+        time_source = TickTimeSource().auto_advance(True)
+        ts1 = time_source.timestamp()
+        ts2 = time_source.timestamp()
+        time_source.auto_advance(False)
+        ts3 = time_source.timestamp()
+        time_source.advance(5)
+        ts4 = time_source.timestamp()
+        ts5 = time_source.timestamp()
+
+        expected = [1, 2, 2, 7, 7]
+        actual = [ts1, ts2, ts3, ts4, ts5]
+        self.assertEqual(expected, actual)
+
+    def test_can_turn_on_auto_advance_midway(self):
+        time_source = TickTimeSource().auto_advance(False)
+        ts1 = time_source.timestamp()
+        ts2 = time_source.timestamp()
+        time_source.auto_advance(True)
+        ts3 = time_source.timestamp()
+        time_source.advance(5)
+        ts4 = time_source.timestamp()
+        ts5 = time_source.timestamp()
+
+        expected = [0, 0, 1, 6, 7]
+        actual = [ts1, ts2, ts3, ts4, ts5]
+        self.assertEqual(expected, actual)
