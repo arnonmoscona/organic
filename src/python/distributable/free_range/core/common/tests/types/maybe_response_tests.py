@@ -83,4 +83,3 @@ class TestIsValid(MaybeResponseMixIn):
     def test_is_valid_with_bad_timing(self):
         maybe = MaybeResponse('req-2', 10, 9)
         self.assertFalse(maybe.is_valid())
-

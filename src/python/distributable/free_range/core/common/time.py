@@ -4,7 +4,9 @@ Common framework classes having to do with time and timeouts
 from datetime import datetime
 from enum import Enum
 
-from free_range.core.common.exceptions import DisallowedInCurrentStateError, InvalidArgument
+from free_range.core.common.exceptions import (
+    DisallowedInCurrentStateError, InvalidArgument,
+)
 
 
 class TimeUnit(Enum):
@@ -66,7 +68,7 @@ class TickTimeSource:
     Intended for use in tests.
     """
 
-    def __init__(self, coordinator = None):
+    def __init__(self, coordinator=None):
         """
         Creates a new tick time source. The resulting time source would actually use a tick
         coordinator as the "real tick source". The inten t is to have a network coordinated

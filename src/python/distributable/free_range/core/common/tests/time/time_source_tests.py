@@ -2,7 +2,7 @@ from time import sleep
 import unittest
 from unittest import mock
 
-from free_range.core.common.time import TimeSource, TimeUnit, TimeoutSpecification
+from free_range.core.common.time import (TimeSource, TimeUnit, TimeoutSpecification)
 
 
 class UnitsTests(unittest.TestCase):

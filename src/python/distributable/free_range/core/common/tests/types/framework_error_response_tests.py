@@ -71,4 +71,3 @@ class TestResponseTime(FrameworkErrorResponseResponseMixIn):
     def test_bad_timing_case_fails_on_response_time(self):
         with self.assertRaises(FreeRangeFrameworkBug):
             self.bad_timing.response_time_millis
-

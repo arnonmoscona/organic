@@ -35,11 +35,12 @@ class Endpoint:
     Endpoints can always be constructed from a string and can be translated back into exactly the
     same string.
 
-    The root Endpoint class is just a marker interface allowing easy object oriented grouping and global
-    identification of endpoints. It has no other real use.
+    The root Endpoint class is just a marker interface allowing easy object oriented
+    grouping and global identification of endpoints. It has no other real use.
     """
 
     def __init__(self, endpoint_string):
+        self._string_repr = None
         self._validate_repr(str(endpoint_string))
 
     def __str__(self):
@@ -130,7 +131,7 @@ class RpcEndpoint(Endpoint):
         self._string_repr = f'RpcEndpoint<{self._function_reference}>'
 
     def _parse_endpoint(self, endpoint_string):
-        sample = '{"callable": "func.ref", "argumentType": "arg.ref1", "returnType": "arg.ref2"}'
+        # sample = '{"callable": "func.ref", "argumentType": "arg.ref1", "returnType": "arg.ref2"}'
         try:
             parsed = json.loads(endpoint_string)
         except (TypeError, JSONDecodeError) as cause:
@@ -145,7 +146,7 @@ class RpcEndpoint(Endpoint):
         self._function_reference = parsed.get(KEY_CALLABLE, None)
         self._argument_type_reference = parsed.get(KEY_ARGUMENT_TYPE, None)
         self._returnType_reference = parsed.get(KEY_RETURN_TYPE, None)
-        
+
         if self._function_reference is None:
             raise InvalidArgument('A function reference is required for an RPC endpoint')
 

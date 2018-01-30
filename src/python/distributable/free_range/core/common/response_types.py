@@ -2,9 +2,9 @@
 Core types used throughout the framework
 """
 
-from free_range.core.common.exceptions import (
-    FreeRangeError, FreeRangeFrameworkBug, RemoteError, ResponseTimeout,
-)
+from free_range.core.common.exceptions import (FreeRangeError,
+                                               FreeRangeFrameworkBug,
+                                               RemoteError, ResponseTimeout)
 
 
 class MaybeResponse:
@@ -340,4 +340,3 @@ class TimeoutResponse(MaybeResponse):
         if not self.is_valid():
             raise FreeRangeFrameworkBug('Not a valid timeout response')
         raise ResponseTimeout(f'Timeout request {self.request_id}', request_id=self.request_id)
-

@@ -101,3 +101,21 @@ class FreeRangeFrameworkBug(FreeRangeError):
             'exception': type(self),
         })
         return state
+
+
+class NotFoundError(FreeRangeError):
+    """
+    An error indicating that an item was not found
+    """
+    def __init__(self, item_reference, msg=None, caused_by=None, request_id=None, **kwargs):
+        super().__init__(msg or 'Internal bug in free-range detected. Please report.', caused_by,
+                         request_id, **kwargs)
+        self.item_reference = item_reference
+
+    def _state_as_dict(self):
+        state = super()._state_as_dict()
+        state.update({
+            'exception': type(self),
+            'item_reference': self.item_reference
+        })
+        return state

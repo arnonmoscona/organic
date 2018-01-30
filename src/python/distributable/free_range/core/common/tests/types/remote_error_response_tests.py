@@ -1,6 +1,8 @@
 import unittest
 
-from free_range.core.common.exceptions import FreeRangeFrameworkBug, RemoteError
+from free_range.core.common.exceptions import (
+    FreeRangeFrameworkBug, RemoteError,
+)
 from free_range.core.common.response_types import RemoteErrorResponse
 
 

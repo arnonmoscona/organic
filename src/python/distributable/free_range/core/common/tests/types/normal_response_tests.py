@@ -55,4 +55,3 @@ class TestCompleted(NormalResponseMixIn):
         self.maybe = NormalResponse('response', None, 1, request_id='req-1')
         with self.assertRaises(FreeRangeFrameworkBug):
             self.maybe.is_completed
-
