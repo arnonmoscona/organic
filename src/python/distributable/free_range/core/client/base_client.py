@@ -4,7 +4,7 @@ Common functionality for all aspects of client
 from uuid import uuid4
 
 from free_range.core.common.exceptions import InvalidArgument
-from free_range.core.common.time import TimeSource, TimeoutClock
+from free_range.core.common.time import TimeoutClock, TimeSource
 
 
 class BaseClient:
