@@ -2,7 +2,7 @@ import unittest
 
 from free_range.core.common.exceptions import InvalidArgument
 from free_range.core.common.tests.random_mixin import RandomMixin
-from free_range.core.common.time import TimeUnit, TimeoutSpecification
+from free_range.core.common.time import TimeoutSpecification, TimeUnit
 
 
 class TimeoutSpecificationConstructorTests(RandomMixin, unittest.TestCase):

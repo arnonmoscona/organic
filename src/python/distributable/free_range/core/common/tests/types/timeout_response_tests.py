@@ -1,8 +1,7 @@
 import unittest
 
-from free_range.core.common.exceptions import (
-    FreeRangeFrameworkBug, ResponseTimeout,
-)
+from free_range.core.common.exceptions import (FreeRangeFrameworkBug,
+                                               ResponseTimeout)
 from free_range.core.common.response_types import TimeoutResponse
 
 

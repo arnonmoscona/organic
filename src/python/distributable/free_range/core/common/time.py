@@ -4,9 +4,8 @@ Common framework classes having to do with time and timeouts
 from datetime import datetime
 from enum import Enum
 
-from free_range.core.common.exceptions import (
-    DisallowedInCurrentStateError, InvalidArgument,
-)
+from free_range.core.common.exceptions import (DisallowedInCurrentStateError,
+                                               InvalidArgument)
 
 
 class TimeUnit(Enum):

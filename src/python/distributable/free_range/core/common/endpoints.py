@@ -2,9 +2,9 @@
 Endpoint related types
 """
 import json
-from json import JSONDecodeError
 import logging
 import re
+from json import JSONDecodeError
 
 from free_range.core.common.exceptions import InvalidArgument
 

@@ -3,7 +3,8 @@ from unittest import mock
 
 from free_range.core.common.exceptions import InvalidArgument
 from free_range.core.common.tests.random_mixin import RandomMixin
-from free_range.core.common.time import (TickTimeSource, TimeUnit, TimeoutSpecification)
+from free_range.core.common.time import (TickTimeSource, TimeoutSpecification,
+                                         TimeUnit)
 
 
 class UnitsTests(unittest.TestCase):

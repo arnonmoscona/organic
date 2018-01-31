@@ -1,9 +1,10 @@
-from time import sleep
 import unittest
+from time import sleep
 from unittest import mock
 
 from free_range.core.common.exceptions import InvalidArgument
-from free_range.core.common.time import (TimeSource, TimeUnit, TimeoutSpecification)
+from free_range.core.common.time import (TimeoutSpecification, TimeSource,
+                                         TimeUnit)
 
 
 class UnitsTests(unittest.TestCase):

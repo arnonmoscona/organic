@@ -4,9 +4,8 @@ This file deviates from the convention of module per class/class per method
 """
 import unittest
 
-from free_range.core.client.tests.papi.rpc_test_papi_pb2 import (
-    RpcRequestA, RpcResponseA,
-)
+from free_range.core.client.tests.papi.rpc_test_papi_pb2 import (RpcRequestA,
+                                                                 RpcResponseA)
 
 
 class RpcAMessageTests(unittest.TestCase):
