@@ -44,6 +44,13 @@ class TimeSource:
     def timeout_specification(self, timeout):
         return TimeoutSpecification(timeout, self.units)
 
+    def validate_timeout_specification(self, timeout_specification):
+        if timeout_specification.units != self.units:
+            raise InvalidArgument(f'timeout specification with incorrect units. '
+                                  f'Expected {self.units} but got {timeout_specification.units}')
+        if timeout_specification.timeout < 0:
+            raise InvalidArgument(f'timeout may not be negative. Got {timeout_specification}')
+
 
 class _UselessTickCoordinator:
     """
@@ -115,6 +122,13 @@ class TickTimeSource:
         self._should_auto_advance = state
         self._next_advance_is_auto = self._should_auto_advance
         return self
+
+    def validate_timeout_specification(self, timeout_specification):
+        if timeout_specification.units != self.units:
+            raise InvalidArgument(f'timeout specification with incorrect units. '
+                                  f'Expected {self.units} but got {timeout_specification.units}')
+        if timeout_specification.timeout < 0:
+            raise InvalidArgument(f'timeout may not be negative. Got {timeout_specification}')
 
 
 class TimeoutSpecification:

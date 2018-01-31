@@ -12,26 +12,26 @@ class BaseClientTestMixin(TestCase):
     def setUp(self):
         self.transport = Mock()
         self.time_source = TickTimeSource().auto_advance(True)
-        self.client = BaseClient(self.transport, time_source=self.time_source)
+        self.client = BaseClient(self.transport, default_timeout=10, time_source=self.time_source)
 
 
 class BaseClientConstructorTests(BaseClientTestMixin):
-    def test_client_indicates_theP_transport_passed_to_the_constructor(self):
+    def test_client_indicates_the_transport_passed_to_the_constructor(self):
         self.assertEqual(self.transport, self.client.transport)
 
     def test_client_rejects_none_as_transport(self):
         with self.assertRaises(InvalidArgument):
-            BaseClient(None)
+            BaseClient(None, default_timeout=10)
 
 
 class GenerateCallIdTests(BaseClientTestMixin):
     def test_generate_call_id_returns_different_values_each_time_for_same_endpoint(self):
-        id1 = self.client.generate_call_id('endpoint')
-        id2 = self.client.generate_call_id('endpoint')
+        id1 = self.client.generate_call_id()
+        id2 = self.client.generate_call_id()
         self.assertNotEqual(id1, id2, 'call IDs must not be constant')
 
     def test_the_base_id_generated_is_a_uuid(self):
-        self.assertEqual(UUID, type(self.client.generate_call_id('endpoint')))
+        self.assertEqual(UUID, type(self.client.generate_call_id()))
 
 
 class GetTimestampTests(RandomMixin, BaseClientTestMixin):
@@ -39,7 +39,7 @@ class GetTimestampTests(RandomMixin, BaseClientTestMixin):
         source = TickTimeSource()
         t = self.random_natural()
         source.advance(t)
-        client = BaseClient(self.transport, time_source=source)
+        client = BaseClient(self.transport, default_timeout=10, time_source=source)
         t2 = client.get_timestamp()
         self.assertEqual(t, t2, 'expected to get the time sources timestamp')
 
@@ -49,4 +49,8 @@ class GetTimeoutSpecificationTests(BaseClientTestMixin):
 
 
 class ClockForTests(BaseClientTestMixin):
+    pass  # fixme: TBD implement this
+
+
+class GetSerializerForTests(BaseClientTestMixin):
     pass  # fixme: TBD implement this
