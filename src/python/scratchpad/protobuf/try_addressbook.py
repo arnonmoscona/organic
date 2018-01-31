@@ -24,4 +24,3 @@ if person.IsInitialized():
     print(f'\nEqual? {person == new_person}')
 else:
     print('Not initialized :-(')
-
