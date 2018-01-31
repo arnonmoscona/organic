@@ -70,7 +70,8 @@ class ValidateTimeoutSpecificationTests(unittest.TestCase):
 
     def test_correct_units_and_negative_timeout_is_not_valid(self):
         with self.assertRaises(InvalidArgument):
-            self.time_source.validate_timeout_specification(self.time_source.timeout_specification(-1))
+            self.time_source.validate_timeout_specification(
+                self.time_source.timeout_specification(-1))
 
     def test_incorrect_units_is_not_valid(self):
         with self.assertRaises(InvalidArgument):

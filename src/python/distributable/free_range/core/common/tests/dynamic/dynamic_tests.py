@@ -41,4 +41,3 @@ class ImportByNameTests(TestCase):
         with self.assertRaises(InvalidArgument):
             import_by_name('free_range.core.common.tests.dynamic.loaded_dynamically.SOME_VAR',
                            require_callable=True)
-

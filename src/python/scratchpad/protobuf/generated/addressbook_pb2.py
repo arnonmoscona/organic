@@ -4,8 +4,8 @@
 import sys
 
 from google.protobuf import (
-    descriptor as _descriptor, message as _message, reflection as _reflection,
-    symbol_database as _symbol_database,
+  descriptor as _descriptor, message as _message, reflection as _reflection,
+  symbol_database as _symbol_database,
 )
 
 _b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))

@@ -3,7 +3,7 @@ from unittest import mock
 
 from free_range.core.common.exceptions import InvalidArgument
 from free_range.core.common.tests.random_mixin import RandomMixin
-from free_range.core.common.time import TickTimeSource, TimeUnit, TimeoutSpecification
+from free_range.core.common.time import (TickTimeSource, TimeUnit, TimeoutSpecification)
 
 
 class UnitsTests(unittest.TestCase):
@@ -146,8 +146,10 @@ class ValidateTimeoutSpecificationTests(unittest.TestCase):
 
     def test_correct_units_and_negative_timeout_is_not_valid(self):
         with self.assertRaises(InvalidArgument):
-            self.time_source.validate_timeout_specification(self.time_source.timeout_specification(-1))
+            self.time_source.validate_timeout_specification(
+                self.time_source.timeout_specification(-1))
 
     def test_incorrect_units_is_not_valid(self):
         with self.assertRaises(InvalidArgument):
-            self.time_source.validate_timeout_specification(TimeoutSpecification(1, TimeUnit.MILLIS))
+            self.time_source.validate_timeout_specification(
+                TimeoutSpecification(1, TimeUnit.MILLIS))
