@@ -35,7 +35,7 @@ fi
 echo
 echo 'Checking for todo items...'
 echo
-git diff master --name-only | grep '\.py$' | xargs egrep --color '# *(question|fixme|todo)' "$@"
+git diff master --name-only | grep '\.py$' | xargs egrep --color '# *(question|fixme|todo).*$' "$@"
 
 echo
 echo 'Done.'
