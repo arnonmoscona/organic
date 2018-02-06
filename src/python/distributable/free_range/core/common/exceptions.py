@@ -37,7 +37,29 @@ class FreeRangeError(Exception):
         return self._context
 
 
-class InvalidArgument(FreeRangeError):
+# OR-4: too much duplicate code: clean up
+
+class InvalidArgumentError(FreeRangeError):
+    def __init__(self, msg=None, caused_by=None, request_id=None, **kwargs):
+        super().__init__(msg, caused_by, request_id, **kwargs)
+
+    def _state_as_dict(self):
+        d = super()._state_as_dict()
+        d.update({'exception': type(self)})
+        return d
+
+
+class InvalidStateError(FreeRangeError):
+    def __init__(self, msg=None, caused_by=None, request_id=None, **kwargs):
+        super().__init__(msg, caused_by, request_id, **kwargs)
+
+    def _state_as_dict(self):
+        d = super()._state_as_dict()
+        d.update({'exception': type(self)})
+        return d
+
+
+class SerializationError(FreeRangeError):
     def __init__(self, msg=None, caused_by=None, request_id=None, **kwargs):
         super().__init__(msg, caused_by, request_id, **kwargs)
 

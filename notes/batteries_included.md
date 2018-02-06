@@ -4,7 +4,7 @@
     * RPC
         * protobuf serializers
         * HTTP response code interoperability
-        * two way JSON serializer interoperability
+        * two way JSON serializer interoperability (see https://stackoverflow.com/questions/19734617/protobuf-to-json-in-python)
         * browser JS client
         * Django/HTTP REST interoperability (server side, at least)
         * streaming response (?)

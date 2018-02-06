@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package free_range.client.tests.papi;
+package free_range.core.client.tests.papi.rpc_test_papi_pb2;
 
 message RpcRequestA {
     string request = 1;
