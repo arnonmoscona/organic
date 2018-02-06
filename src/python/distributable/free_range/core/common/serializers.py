@@ -9,7 +9,7 @@ from free_range.core.common.exceptions import (
 )
 
 
-#OR-5: type hints
+# OR-5: type hints
 
 
 class Serializer(ABC):

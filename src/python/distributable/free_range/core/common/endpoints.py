@@ -50,6 +50,7 @@ class Endpoint:
         raise InvalidArgumentError('The base Endpoint class is never valid.')
 
 
+# OR-5: type hints
 class RpcEndpoint(Endpoint):
     option_strict = False
 
@@ -131,6 +132,7 @@ class RpcEndpoint(Endpoint):
         self._string_repr = f'RpcEndpoint<{self._function_reference}>'
 
     def _parse_endpoint(self, endpoint_string):
+        # OR-6: identify that it's RPC in the JSON {"pattern": "RPC", "spec": {...}}
         # sample = '{"callable": "func.ref", "argumentType": "arg.ref1", "returnType": "arg.ref2"}'
         try:
             parsed = json.loads(endpoint_string)
