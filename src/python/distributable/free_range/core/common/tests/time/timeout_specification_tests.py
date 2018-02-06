@@ -1,6 +1,6 @@
 import unittest
 
-from free_range.core.common.exceptions import InvalidArgument
+from free_range.core.common.exceptions import InvalidArgumentError
 from free_range.core.common.tests.random_mixin import RandomMixin
 from free_range.core.common.time import TimeoutSpecification, TimeUnit
 
@@ -18,7 +18,7 @@ class TimeoutSpecificationConstructorTests(RandomMixin, unittest.TestCase):
         TimeoutSpecification(-1)
 
     def test_zero_is_not_a_valid_timeout_value(self):
-        with self.assertRaises(InvalidArgument):
+        with self.assertRaises(InvalidArgumentError):
             TimeoutSpecification(0)
 
     def test_one_is_a_valid_timeout_value(self):

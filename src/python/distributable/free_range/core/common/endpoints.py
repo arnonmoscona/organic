@@ -6,7 +6,7 @@ import logging
 import re
 from json import JSONDecodeError
 
-from free_range.core.common.exceptions import InvalidArgument
+from free_range.core.common.exceptions import InvalidArgumentError
 
 logger = logging.getLogger('free_range.core.common.endpoints')
 
@@ -47,7 +47,7 @@ class Endpoint:
         return self._string_repr
 
     def _validate_repr(self, endpoint_string):
-        raise InvalidArgument('The base Endpoint class is never valid.')
+        raise InvalidArgumentError('The base Endpoint class is never valid.')
 
 
 class RpcEndpoint(Endpoint):
@@ -135,7 +135,7 @@ class RpcEndpoint(Endpoint):
         try:
             parsed = json.loads(endpoint_string)
         except (TypeError, JSONDecodeError) as cause:
-            raise InvalidArgument('Error parsing endpoint reference: {cause}', caused_by=cause)
+            raise InvalidArgumentError('Error parsing endpoint reference: {cause}', caused_by=cause)
 
         keys = set(parsed.keys())
         allowed_keys = {KEY_ARGUMENT_TYPE, KEY_CALLABLE, KEY_RETURN_TYPE}
@@ -148,7 +148,7 @@ class RpcEndpoint(Endpoint):
         self._returnType_reference = parsed.get(KEY_RETURN_TYPE, None)
 
         if self._function_reference is None:
-            raise InvalidArgument('A function reference is required for an RPC endpoint')
+            raise InvalidArgumentError('A function reference is required for an RPC endpoint')
 
     def _validate_endpoint_strict(self, endpoint_string):
         # no surrounding whitespace
@@ -167,11 +167,11 @@ class RpcEndpoint(Endpoint):
         if item is None:
             return
         if item != item.strip():
-            raise InvalidArgument(f'{descr} may not have surrounding whitespace')
+            raise InvalidArgumentError(f'{descr} may not have surrounding whitespace')
 
         regexp = '^[A-Za-z_]+[A-Za-z0-9_]*$'
         if not re.match(regexp, item):
-            raise InvalidArgument(f'does not match "{regexp}"')
+            raise InvalidArgumentError(f'does not match "{regexp}"')
 
     @property
     def function_reference_string(self):

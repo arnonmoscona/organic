@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import Enum
 
 from free_range.core.common.exceptions import (DisallowedInCurrentStateError,
-                                               InvalidArgument)
+                                               InvalidArgumentError)
 
 
 class TimeUnit(Enum):
@@ -45,10 +45,10 @@ class TimeSource:
 
     def validate_timeout_specification(self, timeout_specification):
         if timeout_specification.units != self.units:
-            raise InvalidArgument(f'timeout specification with incorrect units. '
+            raise InvalidArgumentError(f'timeout specification with incorrect units. '
                                   f'Expected {self.units} but got {timeout_specification.units}')
         if timeout_specification.timeout < 0:
-            raise InvalidArgument(f'timeout may not be negative. Got {timeout_specification}')
+            raise InvalidArgumentError(f'timeout may not be negative. Got {timeout_specification}')
 
 
 class _UselessTickCoordinator:
@@ -112,7 +112,7 @@ class TickTimeSource:
         :return: self. So you may say my_ts.advance(2).timestamp()
         """
         if int(count) < 1:
-            raise InvalidArgument('Tick time source may only be advanced by positive values')
+            raise InvalidArgumentError('Tick time source may only be advanced by positive values')
         self._current_time = self._coordinator.advance(int(count))
         self._next_advance_is_auto = False
         return self
@@ -124,10 +124,10 @@ class TickTimeSource:
 
     def validate_timeout_specification(self, timeout_specification):
         if timeout_specification.units != self.units:
-            raise InvalidArgument(f'timeout specification with incorrect units. '
+            raise InvalidArgumentError(f'timeout specification with incorrect units. '
                                   f'Expected {self.units} but got {timeout_specification.units}')
         if timeout_specification.timeout < 0:
-            raise InvalidArgument(f'timeout may not be negative. Got {timeout_specification}')
+            raise InvalidArgumentError(f'timeout may not be negative. Got {timeout_specification}')
 
 
 class TimeoutSpecification:
@@ -146,7 +146,7 @@ class TimeoutSpecification:
         :param time_unit: the time unit to use. Should match the time source time unit
         """
         if not timeout or int(timeout) < 0 and int(timeout) != -1:
-            raise InvalidArgument(f'timeout must be positive or -1 got: {timeout}')
+            raise InvalidArgumentError(f'timeout must be positive or -1 got: {timeout}')
         self.timeout = timeout
         self.units = units
 

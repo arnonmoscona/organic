@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-from free_range.core.common.exceptions import InvalidArgument
+from free_range.core.common.exceptions import InvalidArgumentError
 from free_range.core.common.tests.random_mixin import RandomMixin
 from free_range.core.common.time import (TickTimeSource, TimeoutSpecification,
                                          TimeUnit)
@@ -33,11 +33,11 @@ class AdvanceTests(RandomMixin, unittest.TestCase):
         self.assertEqual(amount, ts2 - ts1)
 
     def test_trying_to_advance_by_zero_fails(self):
-        with self.assertRaises(InvalidArgument):
+        with self.assertRaises(InvalidArgumentError):
             self.time_source.advance(0).timestamp()
 
     def test_trying_to_advance_by_negative_fails(self):
-        with self.assertRaises(InvalidArgument):
+        with self.assertRaises(InvalidArgumentError):
             self.time_source.advance(-10).timestamp()
 
     def test_trying_to_advance_by_float_converts_to_integer(self):
@@ -146,11 +146,11 @@ class ValidateTimeoutSpecificationTests(unittest.TestCase):
         self.time_source.validate_timeout_specification(self.time_source.timeout_specification(1))
 
     def test_correct_units_and_negative_timeout_is_not_valid(self):
-        with self.assertRaises(InvalidArgument):
+        with self.assertRaises(InvalidArgumentError):
             self.time_source.validate_timeout_specification(
                 self.time_source.timeout_specification(-1))
 
     def test_incorrect_units_is_not_valid(self):
-        with self.assertRaises(InvalidArgument):
+        with self.assertRaises(InvalidArgumentError):
             self.time_source.validate_timeout_specification(
                 TimeoutSpecification(1, TimeUnit.MILLIS))
