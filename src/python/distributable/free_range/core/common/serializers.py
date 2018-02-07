@@ -4,9 +4,9 @@ Serialization / deserialization related types and functions
 from abc import ABC, ABCMeta, abstractmethod
 
 from free_range.core.common.dynamic import import_by_name
-from free_range.core.common.exceptions import (
-    InvalidStateError, InvalidArgumentError, SerializationError,
-)
+from free_range.core.common.exceptions import (InvalidArgumentError,
+                                               InvalidStateError,
+                                               SerializationError)
 
 
 # OR-5: type hints
@@ -180,4 +180,3 @@ class _SimpleProtobufTypeSerializer(Serializer):
         except Exception as ex:
             raise SerializationError(msg=f'Error during deserialize(): {type(ex)}: {ex}',
                                      caused_by=ex)
-

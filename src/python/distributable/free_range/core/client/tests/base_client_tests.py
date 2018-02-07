@@ -3,7 +3,8 @@ from unittest.mock import Mock
 from uuid import UUID
 
 from free_range.core.client.base_client import BaseClient
-from free_range.core.client.tests.papi.rpc_test_papi_pb2 import RpcRequestA, RpcResponseA
+from free_range.core.client.tests.papi.rpc_test_papi_pb2 import (RpcRequestA,
+                                                                 RpcResponseA)
 from free_range.core.common.endpoints import RpcEndpoint
 from free_range.core.common.exceptions import InvalidArgumentError
 from free_range.core.common.serializers import RpcProtobufSerializer

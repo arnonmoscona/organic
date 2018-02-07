@@ -1,14 +1,13 @@
 """
 Common functionality for all aspects of client
 """
-from functools import singledispatch, lru_cache
+from functools import lru_cache, singledispatch
 from uuid import uuid4
 
 from free_range.core.common.endpoints import RpcEndpoint
 from free_range.core.common.exceptions import InvalidArgumentError
 from free_range.core.common.serializers import RpcProtobufSerializer
 from free_range.core.common.time import TimeoutClock, TimeSource
-
 
 MEMOISE_CACHE_SIZE = 1000
 

@@ -48,7 +48,8 @@ class RpcClient:
 
     def validate_rpc_request(self, endpoint, args):
         if not endpoint.supports_rpc():
-            raise exceptions.InvalidArgumentError('Endpoint {} does not support RPC'.format(endpoint))
+            raise exceptions.InvalidArgumentError('Endpoint {} does not support RPC'
+                                                  .format(endpoint))
         pass  # fixme: TBD implement this
 
     def validate_rpc_response(self, endpoint, remote_endpoint):

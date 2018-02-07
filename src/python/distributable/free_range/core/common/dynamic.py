@@ -5,7 +5,8 @@ loading, and reloading of modules and types
 
 import importlib.util
 
-from free_range.core.common.exceptions import InvalidArgumentError, NotFoundError
+from free_range.core.common.exceptions import (InvalidArgumentError,
+                                               NotFoundError)
 
 
 def import_by_name(item_name, require_callable=False):
@@ -25,7 +26,7 @@ def import_by_name(item_name, require_callable=False):
     loaded_module = importlib.import_module(module_name)
     if not isinstance(loaded_module, type(importlib.util)):
         raise InvalidArgumentError(f'"{module_name}" does not reference a module. '
-                              f'Instead found {type(loaded_module)}')
+                                   f'Instead found {type(loaded_module)}')
     if var_name is None:
         if require_callable and not callable(loaded_module):
             raise InvalidArgumentError(f'The specified item name "{item_name}" is not callable')

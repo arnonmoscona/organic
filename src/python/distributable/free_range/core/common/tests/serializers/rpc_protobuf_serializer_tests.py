@@ -1,11 +1,14 @@
 import unittest
 from unittest.mock import Mock
 
-from free_range.core.common.exceptions import (
-    InvalidStateError, NotFoundError, InvalidArgumentError, SerializationError,
-)
-from free_range.core.common.serializers import RpcProtobufSerializer, Serializer
-from free_range.core.client.tests.papi.rpc_test_papi_pb2 import RpcRequestA, RpcResponseA
+from free_range.core.client.tests.papi.rpc_test_papi_pb2 import (RpcRequestA,
+                                                                 RpcResponseA)
+from free_range.core.common.exceptions import (InvalidArgumentError,
+                                               InvalidStateError,
+                                               NotFoundError,
+                                               SerializationError)
+from free_range.core.common.serializers import (RpcProtobufSerializer,
+                                                Serializer)
 
 
 class RpcProtobufSerializerTestMixin(unittest.TestCase):
@@ -221,4 +224,3 @@ class ResponseTypeSerializerTests(RpcProtobufSerializerTestMixin):
     def test_can_deserialize_response(self):
         response = self.serializer.response_type_serializer().deserialize(b'\n\x05hello')
         self.assertEqual(self.response, response)
-

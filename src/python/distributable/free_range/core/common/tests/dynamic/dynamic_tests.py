@@ -1,7 +1,8 @@
 from unittest import TestCase
 
 from free_range.core.common.dynamic import import_by_name
-from free_range.core.common.exceptions import InvalidArgumentError, NotFoundError
+from free_range.core.common.exceptions import (InvalidArgumentError,
+                                               NotFoundError)
 
 
 class ImportByNameTests(TestCase):

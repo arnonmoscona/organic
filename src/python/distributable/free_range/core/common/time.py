@@ -46,7 +46,8 @@ class TimeSource:
     def validate_timeout_specification(self, timeout_specification):
         if timeout_specification.units != self.units:
             raise InvalidArgumentError(f'timeout specification with incorrect units. '
-                                  f'Expected {self.units} but got {timeout_specification.units}')
+                                       f'Expected {self.units} but got '
+                                       f'{timeout_specification.units}')
         if timeout_specification.timeout < 0:
             raise InvalidArgumentError(f'timeout may not be negative. Got {timeout_specification}')
 
@@ -125,7 +126,8 @@ class TickTimeSource:
     def validate_timeout_specification(self, timeout_specification):
         if timeout_specification.units != self.units:
             raise InvalidArgumentError(f'timeout specification with incorrect units. '
-                                  f'Expected {self.units} but got {timeout_specification.units}')
+                                       f'Expected {self.units} but got '
+                                       f'{timeout_specification.units}')
         if timeout_specification.timeout < 0:
             raise InvalidArgumentError(f'timeout may not be negative. Got {timeout_specification}')
 
