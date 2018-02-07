@@ -3,7 +3,7 @@
 echo
 echo 'Running isort...'
 echo
-git diff master --name-only | grep '\.py$' | xargs -L 1 -t isort "$@"
+git diff master --name-only | grep '\.py$' | xargs -L 1 isort "$@"
 
 if [ $? -ne 0 ]; then
     echo '    isort failed.'
@@ -14,7 +14,7 @@ echo
 echo 'Running autoflake...'
 echo
 # Requires: pip install autoflake
-git diff master --name-only | grep '\.py$' | xargs -L 1 -t autoflake --remove-all-unused-imports --remove-unused-variables -i "$@"
+git diff master --name-only | grep '\.py$' | xargs -L 1 autoflake --remove-all-unused-imports --remove-unused-variables -i "$@"
 
 if [ $? -ne 0 ]; then
     echo '    autoflake failed.'
@@ -25,7 +25,7 @@ fi
 echo
 echo 'Running flake8...'
 echo
-git diff master --name-only | grep '\.py$' | xargs -t flake8 "$@"
+git diff master --name-only | grep '\.py$' | xargs flake8 "$@"
 
 if [ $? -ne 0 ]; then
     echo '    flake8 failed.'
