@@ -159,6 +159,10 @@ class TimeoutSpecification:
     def is_blocking(self):
         return int(self.timeout) == -1
 
+    def __eq__(self, other):
+        return (isinstance(self, type(other))
+                and self.units == other.units and self.timeout == other.timeout)
+
 
 class TimeoutClock:
     def __init__(self, timeout_spec, time_source):

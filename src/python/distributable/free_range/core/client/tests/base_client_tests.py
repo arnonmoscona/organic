@@ -48,7 +48,7 @@ class GetTimestampTests(RandomMixin, BaseClientTestMixin):
         self.assertEqual(t, t2, 'expected to get the time sources timestamp')
 
 
-class GetSerializerForTests(BaseClientTestMixin):
+class WithEndpointTestMixin(BaseClientTestMixin):
     def setUp(self):
         super().setUp()
         pkg = 'free_range.core.client.tests.papi.rpc_test_papi_pb2'
@@ -62,6 +62,11 @@ class GetSerializerForTests(BaseClientTestMixin):
         self.bad_endpoint_json = ('{"callable": "func.ref", '
                                   '"argumentType": "arg.ref1", '
                                   '"returnType": "arg.ref2"}')
+
+
+class GetSerializerForTests(WithEndpointTestMixin):
+    def setUp(self):
+        super().setUp()
 
     def test_passing_endpoint_json_works(self):
         serializer = self.client.get_serializer_for(self.endpoint_json)
@@ -79,9 +84,41 @@ class GetSerializerForTests(BaseClientTestMixin):
         serializer = self.client.get_serializer_for(self.bad_endpoint_json)
         self.assertIsInstance(serializer, RpcProtobufSerializer)
 
+    def test_raises_invalid_if_given_invalid_json(self):
+        with self.assertRaises(InvalidArgumentError):
+            self.client.get_serializer_for('this is not JSON')
 
-class GetTimeoutSpecificationTests(BaseClientTestMixin):
-    pass  # fixme: TBD implement this
+
+class GetDefaultTimeoutSpecificationTests(BaseClientTestMixin):
+    def test_default_timeout_spec_is_based_on_constructor_params(self):
+        spec = self.client.get_default_timeout_specification()
+        self.assertEqual(self.time_source.timeout_specification(10), spec)
+
+
+class GetTimeoutSpecificationTests(WithEndpointTestMixin):
+    def test_gets_client_default_when_endpoint_does_not_expose_a_default(self):
+        self.assertFalse(hasattr(self.endpoint, 'get_default_timeout_specification'))
+        self.assertFalse(hasattr(self.endpoint, 'get_timeout_specification'))
+        # now we're sure it doesn't
+        self.assertEqual(self.client.get_default_timeout_specification(),
+                         self.client.get_timeout_specification(self.endpoint))
+
+    def test_uses_the_endpoint_timeout_spec_if_has_one(self):
+        mock_timeout = Mock()
+        setattr(self.endpoint, 'get_timeout_specification', lambda: mock_timeout)
+        self.assertEqual(mock_timeout, self.client.get_timeout_specification(self.endpoint))
+
+    def test_uses_the_endpoint_default_timeout_spec_if_has_one(self):
+        mock_timeout = Mock()
+        setattr(self.endpoint, 'get_default_timeout_specification', lambda: mock_timeout)
+        self.assertEqual(mock_timeout, self.client.get_timeout_specification(self.endpoint))
+
+    def test_prefers_the_specific_over_the_default(self):
+        mock_default_timeout = Mock()
+        mock_timeout2 = Mock()
+        setattr(self.endpoint, 'get_timeout_specification', lambda: mock_timeout2)
+        setattr(self.endpoint, 'get_default_timeout_specification', lambda: mock_default_timeout)
+        self.assertEqual(mock_timeout2, self.client.get_timeout_specification(self.endpoint))
 
 
 class ClockForTests(BaseClientTestMixin):
