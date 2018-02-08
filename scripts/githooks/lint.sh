@@ -1,5 +1,12 @@
 #!/bin/sh
 
+source "${FREE_RANGE_PYENV:?Must set to a python env path}/bin/activate"
+
+if ! python scripts/enforce_min_python_version.py; then
+    echo "aborting commit"
+    exit 1
+fi
+
 echo 'Running isort...'
 git diff master --name-only | grep '\.py$' | xargs -L 1 isort "$@"
 
