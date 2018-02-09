@@ -65,14 +65,52 @@ class BaseClient:
         """
         return _serializer_for(endpoint)
 
-    def route(self, endpoint, args):
-        pass  # fixme: TBD implement this
+    def route(self, endpoint, message=None):
+        """
+        This method takes an endpoint, or an endpoint specification and calls thr message
+        router to resolve the endpoint into a usable RemoteEndpoint that includes also the
+        routing information of where to find the endpoint in the network.
+        :param endpoint: the endpoint to route
+        :param message: and optional message that may be used by the message router.
+            A message router may be content aware and may use the message contents to
+            decide which route to use. For instance, it may use a partitioning scheme of some kind.
+        :return: a RemoteEndpoint, which includes the routing information. Note that the local
+            stack using the local transport is a valid remote endpoint as is some endpoint
+            that resides on the the same machine (localhost or loopback address).
+        """
+        pass  # fixme: TBD implement this (in 1st pass only the local stack is supported)
 
     def get_default_timeout_specification(self):
+        """
+        Produces a timeout specification from the default timeout numeric value and the
+        units of the time source.
+        :return: a TimeoutSpecification
+        """
         return self._time_source.timeout_specification(self._default_timeout)
 
     def get_timeout_specification(self, endpoint):
-        # either from configuration or from default
+        """
+        Gets a timeout specification. The function will get the timeout specification from the
+        the provided endpoint if it cas. It first tries tries to call get_timeout_specification()
+        on the endpoint. If it succeeds then that is the return value. If it fails *for any reason*
+        then it will try to return get_default_timeout_specification() from the endpoint.
+        Failing to to do that it will return the client's default timeout specification.
+        Note that in the process this method can swallow exceptions. It puts a priority
+        on getting some reasonable timeout specification over exposing every issue it encounters.
+        Specifically, the endpoint can be a JSON string specifying the endpoint. If it cannot make
+        an edpoint from that, then it falls back on the default. The function also uses duck
+        typing on an endpoint instance. Any object that responds to get_timeout_specification()
+        or to get_default_timeout_specification() is treated as a valid timeout sepecification
+        provider.
+
+        InvalidArgumentError is swallowed.
+        AttributeError that occurs when calling the endpoint timeout functions is also
+        swallowed (duck typing: method not present is OK. We move on)
+        :param endpoint: an object that may respond to one of the two timeout specification
+            methods or a JSON string specifying an endpoint.
+        :return: whatever the endpoint responded with. It does not validate the return value,
+            or the default timeout specification of the client.
+        """
         try:
             endpoint_timeout = _get_timeout_specification_of(_endpoint_for(endpoint))
         except InvalidArgumentError:
@@ -87,6 +125,15 @@ class BaseClient:
         return self._transport
 
     def clock_for(self, timeout_spec):
+        """
+        A factory method for a timeout clock
+        :param timeout_spec: any TimeoutSpecification
+        :return: A new TimeoutClock
+        :raises AttributeError or ValueError: if the timeout specification object or
+            the time source don't behave as expected. This only happens if non-framework
+            objects are provided. You should get no exception with the appropriate Free Range
+            types.
+        """
         return TimeoutClock(timeout_spec, self._time_source)
 
 
