@@ -6,6 +6,7 @@ import logging
 import re
 from json import JSONDecodeError
 
+from free_range.core.common.decorators import public_interface
 from free_range.core.common.exceptions import InvalidArgumentError
 
 logger = logging.getLogger('free_range.core.common.endpoints')
@@ -39,6 +40,7 @@ class Endpoint:
     grouping and global identification of endpoints. It has no other real use.
     """
 
+    @public_interface
     def __init__(self, endpoint_string):
         self._string_repr = None
         self._validate_repr(str(endpoint_string))
@@ -54,6 +56,7 @@ class Endpoint:
 class RpcEndpoint(Endpoint):
     option_strict = False
 
+    @public_interface
     def __init__(self, string_repr):
         """
         Creates an RPC endpoint reference. An RPC endpoint reference has three parts. There is a
@@ -103,6 +106,7 @@ class RpcEndpoint(Endpoint):
         This is done by calling set_option_strict(True) prior to creating an endpoint reference.
         :param string_repr: see description above.
         """
+
         super().__init__(string_repr)
 
     def _validate_repr(self, endpoint_string):
@@ -113,6 +117,7 @@ class RpcEndpoint(Endpoint):
         # by default there's nothing really to validate
 
     @classmethod
+    @public_interface
     def set_option_strict(cls, strict):
         """
         Set strict validation for the string representation of the endpoint.
@@ -176,21 +181,31 @@ class RpcEndpoint(Endpoint):
             raise InvalidArgumentError(f'does not match "{regexp}"')
 
     @property
+    @public_interface
     def function_reference_string(self):
         return self._function_reference
 
     @property
+    @public_interface
     def argument_type_reference_string(self):
         return self._argument_type_reference
 
     @property
+    @public_interface
     def return_type_reference_string(self):
         return self._returnType_reference
 
     @property
+    @public_interface
     def pattern(self):
         return 'RPC'
 
     @property
+    @public_interface
     def unique_reference(self):
         return f'{self.pattern}:{self.function_reference_string}'
+
+
+@public_interface
+class EndpointLocation:
+    pass  # fixme: TBD implement this

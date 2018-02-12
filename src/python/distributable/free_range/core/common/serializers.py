@@ -3,6 +3,7 @@ Serialization / deserialization related types and functions
 """
 from abc import ABC, ABCMeta, abstractmethod
 
+from free_range.core.common.decorators import public_interface
 from free_range.core.common.dynamic import import_by_name
 from free_range.core.common.exceptions import (InvalidArgumentError,
                                                InvalidStateError,
@@ -19,6 +20,7 @@ class Serializer(ABC):
     __metaclass__ = ABCMeta
 
     @abstractmethod
+    @public_interface
     def serialize(self, value):
         """
         Takes an instance of a serializable class and serializes it.
@@ -29,6 +31,7 @@ class Serializer(ABC):
         return None
 
     @abstractmethod
+    @public_interface
     def deserialize(self, serialized_value):
         """
         Takes a serialized value and returns an instance.
@@ -39,6 +42,7 @@ class Serializer(ABC):
 
 
 class RpcProtobufSerializer:
+    @public_interface
     def __init__(self, argument_type_name, response_type_name):
         """
         A Protobuf 3 based serializer for RPC pattern endpoints. Knows about two types:
@@ -59,6 +63,7 @@ class RpcProtobufSerializer:
         self._argument_type = None
         self._response_type = None
 
+    @public_interface
     def import_types(self):
         """
         Dynamically imports the specified types. The serializer does not expect the types to be
@@ -76,6 +81,7 @@ class RpcProtobufSerializer:
         self._imported = True
         return self
 
+    @public_interface
     def argument_type(self, auto_import=True):
         """
         Returns the concrete type of the argument type.
@@ -89,6 +95,7 @@ class RpcProtobufSerializer:
         self._require_import(self._argument_type_name, auto_import)
         return self._argument_type
 
+    @public_interface
     def response_type(self, auto_import=True):
         """
         Returns the concrete type of the response type.
@@ -102,6 +109,7 @@ class RpcProtobufSerializer:
         self._require_import(self._response_type_name, auto_import)
         return self._response_type
 
+    @public_interface
     def argument_type_serializer(self, auto_import=True):
         """
         Returns a concrete serializer for the argument type
@@ -115,6 +123,7 @@ class RpcProtobufSerializer:
         self._require_import(self._argument_type_name, auto_import)
         return _SimpleProtobufTypeSerializer(self._argument_type, 'argument_type')
 
+    @public_interface
     def response_type_serializer(self, auto_import=True):
         """
         Returns a concrete serializer for the response type

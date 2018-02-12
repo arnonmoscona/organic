@@ -4,6 +4,7 @@ Common framework classes having to do with time and timeouts
 from datetime import datetime
 from enum import Enum
 
+from free_range.core.common.decorators import public_interface
 from free_range.core.common.exceptions import (DisallowedInCurrentStateError,
                                                InvalidArgumentError)
 
@@ -16,6 +17,7 @@ class TimeUnit(Enum):
 class TimeSource:
     """The default time source: based on datetime.now()"""
 
+    @public_interface
     def __init__(self, injected_source=None):
         """
         The constructor would normally create a simple timestamp based on datetime.now().
@@ -26,6 +28,7 @@ class TimeSource:
         self._injected = injected_source
         self._last_value = 0.0
 
+    @public_interface
     def timestamp(self):
         if self._injected:
             new_value = self._injected()
@@ -37,12 +40,15 @@ class TimeSource:
         return new_value
 
     @property
+    @public_interface
     def units(self):
         return TimeUnit.MILLIS
 
+    @public_interface
     def timeout_specification(self, timeout):
         return TimeoutSpecification(timeout, self.units)
 
+    @public_interface
     def validate_timeout_specification(self, timeout_specification):
         if timeout_specification.units != self.units:
             raise InvalidArgumentError(f'timeout specification with incorrect units. '
@@ -75,6 +81,7 @@ class TickTimeSource:
     Intended for use in tests.
     """
 
+    @public_interface
     def __init__(self, coordinator=None):
         """
         Creates a new tick time source. The resulting time source would actually use a tick
@@ -91,12 +98,15 @@ class TickTimeSource:
         self._next_advance_is_auto = False  # this helps behavior to be more intuitive
 
     @property
+    @public_interface
     def units(self):
         return TimeUnit.TICKS
 
+    @public_interface
     def timeout_specification(self, timeout):
         return TimeoutSpecification(timeout, self.units)
 
+    @public_interface
     def timestamp(self):
         if self._should_auto_advance:
             if self._next_advance_is_auto:
@@ -105,6 +115,7 @@ class TickTimeSource:
 
         return self._current_time
 
+    @public_interface
     def advance(self, count=1):
         """
         Advances the time tick by the number of ticks provided.
@@ -118,6 +129,7 @@ class TickTimeSource:
         self._next_advance_is_auto = False
         return self
 
+    @public_interface
     def auto_advance(self, state):
         self._should_auto_advance = state
         self._next_advance_is_auto = self._should_auto_advance
@@ -141,6 +153,7 @@ class TimeoutSpecification:
     when a specialized network coordinated tme source is used in testing.
     """
 
+    @public_interface
     def __init__(self, timeout, units=TimeUnit.MILLIS):
         """
         Specifies a timeout with units
@@ -156,6 +169,7 @@ class TimeoutSpecification:
         return f'TimeoutSpecification({self.timeout} {self.units.value})'
 
     @property
+    @public_interface
     def is_blocking(self):
         return int(self.timeout) == -1
 
@@ -165,6 +179,7 @@ class TimeoutSpecification:
 
 
 class TimeoutClock:
+    @public_interface
     def __init__(self, timeout_spec, time_source):
         self._timeout_spec = timeout_spec
         self._time_source = time_source
@@ -174,6 +189,7 @@ class TimeoutClock:
         return f'TimeoutClock(started_at: {self._start_time}), ' \
                f'timeout={self._timeout_spec.timeout}'
 
+    @public_interface
     def start(self):
         if self._start_time is not None:
             raise DisallowedInCurrentStateError(f'Clock already started at {self._start_time} '
@@ -181,12 +197,14 @@ class TimeoutClock:
         self._start_time = self._time_source.timestamp()
         return self
 
+    @public_interface
     def is_expired(self):
         if self._start_time is None:
             return False
 
         return self.elapsed_time() >= self._timeout_spec.timeout
 
+    @public_interface
     def remaining_timeout_spec(self):
         if self._start_time is None:
             return None
@@ -195,6 +213,7 @@ class TimeoutClock:
             raise TimeoutError('The specified timeout of {} has expired'.format(self._timeout_spec))
         return self._time_source.timeout_specification(remaining_time)
 
+    @public_interface
     def elapsed_time(self):
         if self._start_time is None:
             return 0

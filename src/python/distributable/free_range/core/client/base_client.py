@@ -4,8 +4,10 @@ Common functionality for all aspects of client
 from functools import lru_cache, singledispatch
 from uuid import uuid4
 
+from free_range.core.common.decorators import public_interface
 from free_range.core.common.endpoints import RpcEndpoint
 from free_range.core.common.exceptions import InvalidArgumentError
+from free_range.core.common.routers import LocalStackRouter
 from free_range.core.common.serializers import RpcProtobufSerializer
 from free_range.core.common.time import TimeoutClock, TimeSource
 
@@ -15,6 +17,7 @@ MEMOISE_CACHE_SIZE = 1000
 
 
 class BaseClient:
+    @public_interface
     def __init__(self, transport, default_timeout, time_source=None):
         """
         Creates a a basic free_range client. This serves as the main entry point into free_range
@@ -50,11 +53,15 @@ class BaseClient:
                 raise invalid_timeout_err
         except TypeError:
             raise invalid_timeout_err
+
+        self._router = LocalStackRouter()
         # todo: plugguble serializers
 
+    @public_interface
     def generate_call_id(self):
         return uuid4()  # a simple random UUID
 
+    @public_interface
     def get_serializer_for(self, endpoint):
         """
         Produces a serializer for the classes in the given endpoint
@@ -65,21 +72,23 @@ class BaseClient:
         """
         return _serializer_for(endpoint)
 
+    @public_interface
     def route(self, endpoint, message=None):
         """
         This method takes an endpoint, or an endpoint specification and calls thr message
-        router to resolve the endpoint into a usable RemoteEndpoint that includes also the
+        router to resolve the endpoint into a usable EndpointLocation that includes also the
         routing information of where to find the endpoint in the network.
         :param endpoint: the endpoint to route
         :param message: and optional message that may be used by the message router.
             A message router may be content aware and may use the message contents to
             decide which route to use. For instance, it may use a partitioning scheme of some kind.
-        :return: a RemoteEndpoint, which includes the routing information. Note that the local
+        :return: a EndpointLocation, which includes the routing information. Note that the local
             stack using the local transport is a valid remote endpoint as is some endpoint
             that resides on the the same machine (localhost or loopback address).
         """
-        pass  # fixme: TBD implement this (in 1st pass only the local stack is supported)
+        self._router.route(endpoint, message)
 
+    @public_interface
     def get_default_timeout_specification(self):
         """
         Produces a timeout specification from the default timeout numeric value and the
@@ -88,6 +97,7 @@ class BaseClient:
         """
         return self._time_source.timeout_specification(self._default_timeout)
 
+    @public_interface
     def get_timeout_specification(self, endpoint):
         """
         Gets a timeout specification. The function will get the timeout specification from the
@@ -117,13 +127,16 @@ class BaseClient:
             endpoint_timeout = None
         return endpoint_timeout or self.get_default_timeout_specification()
 
+    @public_interface
     def get_timestamp(self):
         return self._time_source.timestamp()
 
     @property
+    @public_interface
     def transport(self):
         return self._transport
 
+    @public_interface
     def clock_for(self, timeout_spec):
         """
         A factory method for a timeout clock

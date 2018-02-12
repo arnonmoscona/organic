@@ -5,10 +5,12 @@ loading, and reloading of modules and types
 
 import importlib.util
 
+from free_range.core.common.decorators import public_interface
 from free_range.core.common.exceptions import (InvalidArgumentError,
                                                NotFoundError)
 
 
+@public_interface
 def import_by_name(item_name, require_callable=False):
     module_name, var_name = _break_item_string(item_name)
     if (var_name is not None and var_name.strip() == ''
