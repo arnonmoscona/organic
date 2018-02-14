@@ -9,6 +9,8 @@ from json import JSONDecodeError
 from free_range.core.common.decorators import public_interface
 from free_range.core.common.exceptions import InvalidArgumentError
 
+PATTERN_RPC = 'RPC'
+
 logger = logging.getLogger('free_range.core.common.endpoints')
 
 KEY_RETURN_TYPE = 'returnType'
@@ -47,6 +49,10 @@ class Endpoint:
 
     def __str__(self):
         return self._string_repr
+
+    @property
+    def pattern(self):
+        return None
 
     def _validate_repr(self, endpoint_string):
         raise InvalidArgumentError('The base Endpoint class is never valid.')
@@ -162,7 +168,7 @@ class RpcEndpoint(Endpoint):
         # we do not check whether types are importable at this point
         for item in [
             (self._function_reference, 'function'),
-            (self._argument_type_reference, 'argument tyep'),
+            (self._argument_type_reference, 'argument type'),
             (self._returnType_reference, 'return type'),
         ]:
             reference = item[0]
@@ -198,14 +204,9 @@ class RpcEndpoint(Endpoint):
     @property
     @public_interface
     def pattern(self):
-        return 'RPC'
+        return PATTERN_RPC
 
     @property
     @public_interface
     def unique_reference(self):
         return f'{self.pattern}:{self.function_reference_string}'
-
-
-@public_interface
-class EndpointLocation:
-    pass  # fixme: TBD implement this
