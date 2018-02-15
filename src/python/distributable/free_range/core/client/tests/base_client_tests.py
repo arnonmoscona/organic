@@ -9,7 +9,7 @@ from free_range.core.common.endpoints import RpcEndpoint
 from free_range.core.common.exceptions import InvalidArgumentError
 from free_range.core.common.serializers import RpcProtobufSerializer
 from free_range.core.common.tests.random_mixin import RandomMixin
-from free_range.core.common.time import TickTimeSource
+from free_range.core.common.time import TickTimeSource, TimeoutClock
 
 
 class BaseClientTestMixin(TestCase):
@@ -122,4 +122,6 @@ class GetTimeoutSpecificationTests(WithEndpointTestMixin):
 
 
 class ClockForTests(BaseClientTestMixin):
-    pass  # fixme: TBD implement this
+    def test_clock_for_makes_a_timeout_clock(self):
+        clock = self.client.clock_for(self.client.get_timeout_specification(Mock()))
+        self.assertIsInstance(clock, TimeoutClock)
