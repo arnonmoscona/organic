@@ -1,5 +1,11 @@
 """
-The RPC behavior of a client
+The RPC behavior of a client, implemented over an asynchronous transport API.
+This is not the simplest RPC client. A simpler one can be constructed over a blocking,
+synchronous transport API.
+
+This client is constructed with the intent of having a transport API that provides only send,
+receive, and cancel operations. It would be greately simplified for a transport supporting a
+blocking call operation.
 """
 from free_range.core.common import exceptions
 from free_range.core.common.decorators import public_interface
@@ -25,7 +31,7 @@ class RpcClient:
         start_timestamp = self._base_client.get_timestamp()
         try:
             self._transport.send(TransportMessageType.RPC_REQ, call_id, endpoint_location, message,
-                                 serializer, timeout_spec)  # fixme: do I need the type argument?
+                                 serializer, timeout_spec, expect_response=True)
         except ResponseTimeout as timeout:
             return TimeoutResponse(timeout, call_id, start_timestamp)
 
@@ -33,9 +39,10 @@ class RpcClient:
         # the future already had ensure_future called for it
 
         try:
-            future_response = self._transport.receive(call_id, endpoint_location,
-                                                      timeout_clock.remaining_timeout_spec())
-            self._transport.block_until_complete(call_id, timeout_clock.remaining_timeout_spec())
+            future_response = self._transport.receive(endpoint_location,
+                                                      timeout_clock.remaining_timeout_spec(),
+                                                      response_to=call_id)
+            future_response.block_until_complete(timeout_clock.remaining_timeout_spec())
         except ResponseTimeout as timeout:
             self._transport.cancel(call_id)
             return TimeoutResponse(timeout, call_id, start_timestamp)

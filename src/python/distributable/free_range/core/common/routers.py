@@ -46,6 +46,8 @@ class EndpointLocation(ABC):
     appropriate for the endpoint type.
     """
 
+    # fixme: add abstract methods for callable and get_endpoint
+
 
 class LocalStackRpcEndpointLocation(EndpointLocation):
     """
@@ -82,3 +84,8 @@ class LocalStackRpcEndpointLocation(EndpointLocation):
             return dynamic.import_by_name(function_ref, require_callable=True)
         except AttributeError:
             raise InvalidArgumentError(f'Could not mport function from {self._endpoint}')
+
+    @public_interface
+    def get_endpoint(self):
+        # fixme: document and test this
+        return self._endpoint

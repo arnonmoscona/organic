@@ -1,5 +1,7 @@
 // A protobuf specification for use in RPC tests.
 
+// fixme: move this PAPI to a more central place
+
 syntax = "proto3";
 
 package free_range.core.client.tests.papi.rpc_test_papi_pb2;

@@ -16,7 +16,7 @@ MEMOISE_CACHE_SIZE = 1000
 # OR-5: type hints
 
 
-class BaseClient:
+class BaseClient:  # fixme: inherit from Resolver(ABC)
     @public_interface
     def __init__(self, transport, default_timeout, time_source=None):
         """

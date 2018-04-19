@@ -1,6 +1,7 @@
 #!/bin/sh
 
 source "${FREE_RANGE_PYENV:?Must set to a python env path}/bin/activate"
+# on macs you may need launchctl setenv FREE_RANGE_PYENV ~/envs/3.6.1
 
 if ! python scripts/enforce_min_python_version.py; then
     echo "aborting commit"
