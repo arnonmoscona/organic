@@ -72,7 +72,7 @@ class LocalTransportTestMixin(TestCase):
         return mock_execute(wrapped_message)
 
 
-class SendTests(LocalTransportTestMixin):
+class SendTRpcests(LocalTransportTestMixin):
     def test_send_does_not_blow_up_on_request_with_response_requested(self):
         self.transport.send(TransportMessageType.RPC_REQ, 1, self.endpoint_location, self.request,
                             self.serializer, self.timeout_spec, expect_response=True)
@@ -101,4 +101,13 @@ class SendTests(LocalTransportTestMixin):
                                 r, self.serializer, self.timeout_spec, expect_response=False)
         self.assertEqual(['hi', 'hi too', 'hi tree'], self.calls)
 
-# fixme: validate sequences of control layer invocation methods by transport
+# fixme: validate sequences of control layer invocation methods by transport (??)
+
+
+class ReceiveRpcTests(LocalTransportTestMixin):
+    # fixme: test simple receive after send
+    # fixme: test timeout when no send
+    # fixme: how do I test receive before send? Maybe need a peek method? Maybe callback
+    #       coroutine? Callback?
+    # fixme: major use case: receive_all
+    pass  # fixme: TBD implement this

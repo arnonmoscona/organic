@@ -95,7 +95,7 @@ class LocalTransport(AbstractTransport):
         return self._control_layer.unwrap_response(wrapped_response)
 
     # <editor-fold desc="Move this entire functionality to appropriate module. Does not belong">
-    def _execute(self, request):
+    def _execute(self, request):  # fixme: UNUSED!!!!!!!!
         # fixme: WRONG PLACE FOR THIS!
         # fixme: this whole function should be part of an execution module invoked by control
         if request is None:
@@ -121,7 +121,7 @@ class LocalTransport(AbstractTransport):
             interaction_start_timestamp = self._control_layer.interaction_start_timestamp(request)
             response_message = RemoteErrorResponse(ex, request_id, interaction_start_timestamp,
                                                    received_timestamp)
-        return response_message  # fixme: wrap the response
+        return response_message  # fixme: wrap the response?
 
         # fixme: check if we even expect any response...
     # </editor-fold>
